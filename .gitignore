@@ -1,2 +1,3 @@
 media/img/dev
 .well-known
+*.DS_store
