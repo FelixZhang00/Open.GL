@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B5F0D6F91AEBE4610009CB82 /* texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5F0D6F71AEBE4610009CB82 /* texture.cpp */; };
 		B5F571091AEBE1A600088CE0 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5F571081AEBE1A600088CE0 /* main.cpp */; };
 		B5F571101AEBE1C600088CE0 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5F5710F1AEBE1C600088CE0 /* OpenGL.framework */; };
 		B5F571121AEBE1CD00088CE0 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5F571111AEBE1CD00088CE0 /* GLUT.framework */; };
@@ -27,6 +28,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		B5F0D6F71AEBE4610009CB82 /* texture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = texture.cpp; sourceTree = "<group>"; };
+		B5F0D6F81AEBE4610009CB82 /* texture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = texture.h; sourceTree = "<group>"; };
 		B5F571051AEBE1A600088CE0 /* glcodes */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = glcodes; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5F571081AEBE1A600088CE0 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		B5F5710F1AEBE1C600088CE0 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -76,6 +79,8 @@
 				B5F571141AEBE1FE00088CE0 /* utils.h */,
 				B5F571161AEBE28700088CE0 /* drawing.cpp */,
 				B5F571171AEBE28700088CE0 /* drawing.h */,
+				B5F0D6F71AEBE4610009CB82 /* texture.cpp */,
+				B5F0D6F81AEBE4610009CB82 /* texture.h */,
 			);
 			path = glcodes;
 			sourceTree = "<group>";
@@ -137,6 +142,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B5F571091AEBE1A600088CE0 /* main.cpp in Sources */,
+				B5F0D6F91AEBE4610009CB82 /* texture.cpp in Sources */,
 				B5F571181AEBE28700088CE0 /* drawing.cpp in Sources */,
 				B5F571151AEBE1FE00088CE0 /* utils.cpp in Sources */,
 			);
@@ -255,6 +261,7 @@
 				B5F5710E1AEBE1A600088CE0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

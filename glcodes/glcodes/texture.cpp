@@ -1,12 +1,13 @@
 //
-//  drawing.cpp
-//  OpenGL VAO,VBO,EBO示例
+//  texture.cpp
+//  texture 示例
 //
 //  Created by chenbingfeng on 15/4/25.
 //  Copyright (c) 2015年 chenbingfeng. All rights reserved.
 //
 
-#include "drawing.h"
+#include "texture.h"
+
 #include <math.h>
 #include <unistd.h>
 
@@ -148,7 +149,7 @@ static void reshape(int w, int h)
     
 }
 
-void drawing(){
+void texture(){
     LOG("gl Test Code");
     int argc = 0;
     char * argv[] = {0};
