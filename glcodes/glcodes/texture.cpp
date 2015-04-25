@@ -18,17 +18,18 @@
 #include <OpenGL/gl3.h>
 
 #include "utils.h"
+#include "SOIL.h"
 
 static GLfloat vertices[] = {
-    0.0f, 0.5f, 1.0f,
-    0.5f, -0.5f, 0.0f,
-    -0.5f, -0.5f, 0.3f,
-    1.0f, 0.5f, 0.8f,
+    -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+    0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+    0.5f, -0.5f, 0.3f, 1.0f, 1.0f,
+    -0.5f, -0.5f, 0.8f, 0.0f, 1.0f
 };
 
 static GLuint elements[] = {
     0,1,2,
-    0,1,3
+    2,3,0
 };
 
 static const char* vertexSource =
@@ -36,11 +37,14 @@ static const char* vertexSource =
 "\n"
 "in vec2 position;\n"
 "in float color;\n"
+"in vec2 texcoord;\n"
+"out vec2 Texcoord;\n"
 "out vec3 Color;\n"
 "\n"
 "\n"
 "void main()\n"
 "{\n"
+"    Texcoord = texcoord * vec2(1.0, -1.0);\n"
 "    Color = vec3(color);\n"
 "    gl_Position = vec4(position.x, -position.y, 0.0, 1.0);\n"
 "}\n";
@@ -49,20 +53,26 @@ static const char* fragmentSource =
 "#version 150\n"
 "\n"
 "in vec3 Color;\n"
+"in vec2 Texcoord;\n"
 "uniform vec3 triangleColor;\n"
 "\n"
 "out vec4 outColor;\n"
+"uniform sampler2D texCat;\n"
+"uniform sampler2D texDog;\n"
 "\n"
 "void main()\n"
 "{\n"
-"    outColor = vec4(vec3(1.0f,1.0f,1.0f) - Color, 1.0);\n"
+"    vec4 c1 = texture(texCat, Texcoord);\n"
+"    vec4 c2 = texture(texDog, Texcoord);\n"
+"    outColor = mix(c1, c2, 0.5);\n"
 "}\n";
 static char clog[2014];
 static GLuint vbo;
 static GLuint vao;
 static GLuint ebo;
 static GLint uniColor;
-static GLuint textureId;
+static GLuint texCat;
+static GLuint texDog;
 static decltype(std::chrono::high_resolution_clock::now()) t_start;
 static void init()
 {
@@ -115,15 +125,48 @@ static void init()
     //attributes
     GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
     glEnableVertexAttribArray(posAttrib);
-    glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 3*sizeof(float), 0);
+    glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), 0);
     GLint colAttrib = glGetAttribLocation(shaderProgram, "color");
     glEnableVertexAttribArray(colAttrib);
-    glVertexAttribPointer(colAttrib, 1, GL_FLOAT, GL_FALSE, 3*sizeof(float), (GLvoid*)(2*sizeof(float)));
+    glVertexAttribPointer(colAttrib, 1, GL_FLOAT, GL_FALSE, 5*sizeof(float), (GLvoid*)(2*sizeof(float)));
     
     uniColor = glGetUniformLocation(shaderProgram, "triangleColor");
     glUniform3f(uniColor, 1.0f, 0.0f, 0.0f);
     
+    glGenTextures(1, &texCat);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texCat);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     
+    int width, height;
+    unsigned char* image = SOIL_load_image("sample.png", &width, &height, 0, SOIL_LOAD_RGB);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    SOIL_free_image_data(image);
+    
+    glGenTextures(1, &texDog);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, texDog);
+    
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    image = SOIL_load_image("sample2.png", &width, &height, 0, SOIL_LOAD_RGB);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    SOIL_free_image_data(image);
+    
+    GLuint uniTexCat = glGetUniformLocation(shaderProgram, "texCat");
+    glUniform1i(uniTexCat, 0);
+    GLuint uniTexDog = glGetUniformLocation(shaderProgram, "texDog");
+    glUniform1i(uniTexDog, 1);
+    
+    
+    GLint texAttrib = glGetAttribLocation(shaderProgram, "texcoord");
+    glEnableVertexAttribArray(texAttrib);
+    glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (GLvoid*)(3*sizeof(float)));
     //    glGenTextures(1, &textureId);
     //    glBindTexture(GL_TEXTURE_2D, textureId);
     t_start = std::chrono::high_resolution_clock::now();
@@ -140,8 +183,8 @@ static void display()
     //    glDrawArrays(GL_TRIANGLES, 0, 3);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glutSwapBuffers();
-    sleep(0.33);
-    glutPostRedisplay();
+    //sleep(0.33);
+    //glutPostRedisplay();
 }
 
 static void reshape(int w, int h)
