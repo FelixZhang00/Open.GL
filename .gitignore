@@ -1,3 +1,4 @@
-media/img/dev
-.well-known
+*.cpp
 *.DS_store
+*.xcuserstate
+*.xccheckout
