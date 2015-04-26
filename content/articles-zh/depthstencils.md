@@ -93,6 +93,7 @@ Stencil testing is enabled with a call to `glEnable`, just like depth testing. Y
 
 设置模板值
 --------
+（下面这部分还是看英文吧，翻译成中文了，很难准确表达）
 
 Regular drawing operations are used to determine which values in the stencil buffer are affected by any stencil operation. If you want to affect a rectangle of values like in the sample above, simply draw a 2D quad in that area. What happens to those values can be controlled by you using the `glStencilFunc`, `glStencilOp` and `glStencilMask` functions.
 
