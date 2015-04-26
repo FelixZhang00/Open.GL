@@ -13,6 +13,7 @@
 		B5F0D7071AEC0B5F0009CB82 /* image_helper.c in Sources */ = {isa = PBXBuildFile; fileRef = B5F0D6FF1AEC0B5F0009CB82 /* image_helper.c */; };
 		B5F0D7081AEC0B5F0009CB82 /* stb_image_aug.c in Sources */ = {isa = PBXBuildFile; fileRef = B5F0D7011AEC0B5F0009CB82 /* stb_image_aug.c */; };
 		B5F0D7271AECA2110009CB82 /* transformation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5F0D7251AECA2110009CB82 /* transformation.cpp */; };
+		B5F0D72A1AECBA1F0009CB82 /* depth_stencil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5F0D7281AECBA1F0009CB82 /* depth_stencil.cpp */; };
 		B5F571091AEBE1A600088CE0 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5F571081AEBE1A600088CE0 /* main.cpp */; };
 		B5F571101AEBE1C600088CE0 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5F5710F1AEBE1C600088CE0 /* OpenGL.framework */; };
 		B5F571121AEBE1CD00088CE0 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5F571111AEBE1CD00088CE0 /* GLUT.framework */; };
@@ -74,6 +75,8 @@
 		B5F0D7241AECA1E10009CB82 /* vector_relational.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = vector_relational.hpp; sourceTree = "<group>"; };
 		B5F0D7251AECA2110009CB82 /* transformation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = transformation.cpp; sourceTree = "<group>"; };
 		B5F0D7261AECA2110009CB82 /* transformation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = transformation.h; sourceTree = "<group>"; };
+		B5F0D7281AECBA1F0009CB82 /* depth_stencil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = depth_stencil.cpp; sourceTree = "<group>"; };
+		B5F0D7291AECBA1F0009CB82 /* depth_stencil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = depth_stencil.h; sourceTree = "<group>"; };
 		B5F571051AEBE1A600088CE0 /* glcodes */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = glcodes; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5F571081AEBE1A600088CE0 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		B5F5710F1AEBE1C600088CE0 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -180,6 +183,8 @@
 				B5F0D6F81AEBE4610009CB82 /* texture.h */,
 				B5F0D7251AECA2110009CB82 /* transformation.cpp */,
 				B5F0D7261AECA2110009CB82 /* transformation.h */,
+				B5F0D7281AECBA1F0009CB82 /* depth_stencil.cpp */,
+				B5F0D7291AECBA1F0009CB82 /* depth_stencil.h */,
 			);
 			path = glcodes;
 			sourceTree = "<group>";
@@ -246,6 +251,7 @@
 				B5F0D7071AEC0B5F0009CB82 /* image_helper.c in Sources */,
 				B5F0D6F91AEBE4610009CB82 /* texture.cpp in Sources */,
 				B5F571181AEBE28700088CE0 /* drawing.cpp in Sources */,
+				B5F0D72A1AECBA1F0009CB82 /* depth_stencil.cpp in Sources */,
 				B5F571151AEBE1FE00088CE0 /* utils.cpp in Sources */,
 				B5F0D7081AEC0B5F0009CB82 /* stb_image_aug.c in Sources */,
 				B5F0D7271AECA2110009CB82 /* transformation.cpp in Sources */,

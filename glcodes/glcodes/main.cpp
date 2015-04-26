@@ -8,8 +8,9 @@
 //#include "drawing.h"
 #include "texture.h"
 #include "transformation.h"
+#include "depth_stencil.h"
 
 int main(int argc, const char * argv[]) {
-    transformation();
+    depth_stencil();
     return 0;
 }
