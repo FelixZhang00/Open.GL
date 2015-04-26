@@ -13,7 +13,7 @@ a = \begin{bmatrix}
   \end{bmatrix}
 \]
 
-Matrices values are indexed by `(i,j)` where `i` is the row and `j` is the column. That is why the matrix displayed above is called a 3-by-2 matrix. To refer to a specific value in the matrix, for example `5`, the \(a_{31}\) notation is used.
+Matrices values are indexed by `(i,j)` where `i` is the row and `j` is the column. That is why the matrix displayed above is called a 3-by-2 matrix. To refer to a specific value in the matrix, for example `5`, the \(a_{31}\) notation is used.）
 
 Basic operations
 ========
@@ -160,7 +160,7 @@ Translation
 
 To see why we're working with 4-by-1 vectors and subsequently 4-by-4 transformation matrices, let's see how a translation matrix is formed. A translation moves a vector a certain distance in a certain direction.
 
-<img src="/media/img/c4_translation.png" alt="" />
+<img src="../../media/img/c4_translation.png" alt="" />
 
 Can you guess from the multiplication overview what the matrix should look like to translate a vector by `(X,Y,Z)`?
 
@@ -193,7 +193,7 @@ Scaling
 
 A scale transformation scales each of a vector's components by a (different) scalar. It is commonly used to shrink or stretch a vector as demonstrated below.
 
-<img src="/media/img/c4_scaling.png" alt="" />
+<img src="../../media/img/c4_scaling.png" alt="" />
 
 If you understand how the previous matrix was formed, it should not be difficult to come up with a matrix that scales a given vector by `(SX,SY,SZ)`.
 
@@ -226,7 +226,7 @@ Rotation
 
 A rotation transformation rotates a vector around the origin `(0,0,0)` using a given *axis* and *angle*. To understand how the axis and the angle control a rotation, let's do a small experiment.
 
-<img src="/media/img/c4_rotation.png" alt="" />
+<img src="../../media/img/c4_rotation.png" alt="" />
 
 Put your thumb up against your monitor and try rotating your hand around it. The object, your hand, is rotating around your thumb: the rotation axis. The further you rotate your hand away from its initial position, the higher the rotation angle.
 
@@ -431,7 +431,7 @@ Transformations in OpenGL
 
 You've seen in the previous sections how basic transformations can be applied to vectors to move them around in the world. The job of transforming 3D points into 2D coordinates on your screen is also accomplished through matrix transformations. Just like the graphics pipeline, transforming a vector is done step-by-step. Although OpenGL allows you to decide on these steps yourself, all 3D graphics applications use a variation of the process described here.
 
-<img src="/media/img/c4_transformation.png" alt="" />
+<img src="../../media/img/c4_transformation.png" alt="" />
 
 Each transformation transforms a vector into a new coordinate system, thus moving to the next step. These transformations and coordinate systems will be discussed below in more detail.
 
@@ -540,7 +540,7 @@ All that remains is updating the vertex shader to include this uniform and use i
 
 The primitives in your scene will now be upside down.
 
-<img src="/media/img/c4_window.png" alt="" />
+<img src="../../media/img/c4_window.png" alt="" />
 
 To spice things up a bit, you could change the rotation with time:
 
@@ -568,7 +568,7 @@ To spice things up a bit, you could change the rotation with time:
 This will result in something like this:
 
 <div class="livedemo_wrap">
-	<div class="livedemo" id="demo_c4_rotation" style="background: url('/media/img/c4_window2.png')">
+	<div class="livedemo" id="demo_c4_rotation" style="background: url('../../media/img/c4_window2.png')">
 		<canvas width="640" height="480"></canvas>
 		<script type="text/javascript" src="/content/demos/c4_rotation.js"></script>
 	</div>
@@ -600,7 +600,7 @@ Similarly, GLM comes with the `glm::perspective` function to create a perspectiv
 > **Field-of-view** <br /><br />
 > The field-of-view defines the angle between the top and bottom of the 2D surface on which the world will be projected. Zooming in games is often accomplished by decreasing this angle as opposed to moving the camera closer, because it more closely resembles real life.
 >
-> <img src="/media/img/c4_fov.png" alt="" />
+> <img src="../../media/img/c4_fov.png" alt="" />
 >
 > By decreasing the angle, you can imagine that the "rays" from the camera spread out less and thus cover a smaller area of the scene.
 
@@ -630,7 +630,7 @@ Now piecing it all together, the vertex shader looks something like this:
 Notice that I've renamed the matrix previously known as `trans` to `model` and it is still updated every frame.
 
 <div class="livedemo_wrap">
-	<div class="livedemo" id="demo_c4_3d" style="background: url('/media/img/c4_window3.png')">
+	<div class="livedemo" id="demo_c4_3d" style="background: url('../../media/img/c4_window3.png')">
 		<canvas width="640" height="480"></canvas>
 		<script type="text/javascript" src="/content/demos/c4_3d.js"></script>
 	</div>
