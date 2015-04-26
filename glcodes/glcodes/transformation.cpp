@@ -43,6 +43,8 @@ static const char* vertexSource =
 "in float color;\n"
 "in vec2 texcoord;\n"
 "uniform mat4 trans;\n"
+"uniform mat4 view;\n"
+"uniform mat4 proj;\n"
 "out vec2 Texcoord;\n"
 "out vec3 Color;\n"
 "\n"
@@ -51,7 +53,7 @@ static const char* vertexSource =
 "{\n"
 "    Texcoord = texcoord * vec2(1.0, -1.0);\n"
 "    Color = vec3(color);\n"
-"    gl_Position = trans * vec4(position.x, -position.y, 0.0, 1.0);\n"
+"    gl_Position = proj * view * trans * vec4(position.x, -position.y, 0.0, 1.0);\n"
 "}\n";
 
 static const char* fragmentSource =
@@ -81,6 +83,8 @@ static GLuint texDog;
 static decltype(std::chrono::high_resolution_clock::now()) t_start;
 static glm::mat4 trans;
 static GLuint uniTrans;
+static GLuint uniView;
+static GLuint uniProj;
 static void init()
 {
     LOG("GL_RENDERER", glGetString(GL_RENDERER),  " GL_VERSION = ",glGetString(GL_VERSION));
@@ -178,7 +182,17 @@ static void init()
     //    glBindTexture(GL_TEXTURE_2D, textureId);
     t_start = std::chrono::high_resolution_clock::now();
     
+    //view matrix
+    glm::mat4 view = glm::lookAt(glm::vec3(1.2f,1.2f,1.2f), glm::vec3(0.0f,0.0f,0.0f), glm::vec3(0.0f,0.0f,1.0f));
+    
+    //projection matrix
+    glm::mat4 proj = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 1.0f, 10.0f);
     uniTrans = glGetUniformLocation(shaderProgram, "trans");
+    uniView = glGetUniformLocation(shaderProgram, "view");
+    glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(view));
+    uniProj = glGetUniformLocation(shaderProgram, "proj");
+    glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
+    
 
 }
 
