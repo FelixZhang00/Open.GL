@@ -1,5 +1,6 @@
 Transform feedback
 ==================
+从流水线中拿一些数据，比如在几何着色器之后的顶点数目。
 
 Up until now we've always sent vertex data to the graphics processor and only
 produced drawn pixels in framebuffers in return. What if we want to retrieve the
@@ -12,7 +13,7 @@ vertices back to these as well. You could for example build a vertex shader that
 simulates gravity and writes updated vertex positions back to the buffer. This
 way you don't have to transfer this data back and forth from graphics memory to
 main memory. On top of that, you get to benefit from the vast parallel
-processing power of today's GPUs.
+processing power of today's GPUs.直到现在，我们使用VBO来装将要被绘制的顶点数据。然而，变换反馈实际上能够允许着色器将一些顶点协会到VBO中。比如，你可以创建一个着色器来模拟重力，将顶点的位置更新回VBO。使用这个方法，这种顶点数据的变更就不再需要有数据在显卡和CPU之间传递了，增加了性能。
 
 Basic feedback
 ==============
@@ -23,9 +24,9 @@ because we're not going to draw anything in this chapter! Although this feature
 can be used to simplify effects like particle simulation, explaining these is a
 bit beyond the scope of these articles. After you've understood the basics of
 transform feedback, you'll be able to find and understand plenty of articles
-around the web on these topics.
+around the web on these topics.我们从头做起，这样能够显示出变换反馈是多么简单。不过，因为我们不准备画任何东西出来，所以没有什么效果图了。虽然，这个特性能够简化诸如粒子模拟等特效，但是这已经超出了本文的讨论。当你理解了变换反馈之后，你就可以进一步理解网上很多相关话题的讨论了。
 
-Let's start with a simple vertex shader.
+Let's start with a simple vertex shader.我们从一个简单的顶点着色器开始：
 
     const GLchar* vertexShaderSrc = GLSL(
         in float inValue;
@@ -38,7 +39,7 @@ Let's start with a simple vertex shader.
 
 This vertex shader does not appear to make much sense. It doesn't set a
 `gl_Position` and it only takes a single arbitrary float as input. Luckily, we
-can use transform feedback to capture the result, as we'll see momentarily.
+can use transform feedback to capture the result, as we'll see momentarily.这个顶点着色器好像没有多少意思。它没有设置gl_Position，而只是获取一个float作为输入。幸运地，我们可以使用变换反馈来获取它的结果，我们马上就能够看到：
 
     GLuint shader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(shader, 1, &vertexShaderSrc, nullptr);
@@ -49,36 +50,36 @@ can use transform feedback to capture the result, as we'll see momentarily.
 
 Compile the shader, create a program and attach the shader, but don't call
 `glLinkProgram` yet! Before linking the program, we have to tell OpenGL which
-output attributes we want to capture into a buffer.
+output attributes we want to capture into a buffer.编译着色器，创建着色程序，绑定着色器到着色程序。但不要链接，在链接之前，我们需要告诉OpenGL我们需要抓住哪些输出attribute到buffer中。
 
     const GLchar* feedbackVaryings[] = { "outValue" };
     glTransformFeedbackVaryings(program, 1, feedbackVaryings, GL_INTERLEAVED_ATTRIBS);
 
 The first parameter is self-explanatory, the second and third parameter specify
 the length of the output names array and the array itself, and the final
-parameter specifies how the data should be written.
+parameter specifies how the data should be written.第一个参数是显然的，第二个参数指明了输出的名字数组的长度，第三个是名字数组，最后一个表示这些数据该怎么被写：
 
-The following two formats are available:
+The following two formats are available:有如下2中方式可供选择：
 
-- **GL_INTERLEAVED_ATTRIBS**: Write all attributes to a single buffer object.
+- **GL_INTERLEAVED_ATTRIBS**: Write all attributes to a single buffer object.把所有的输出属性写到同一个缓冲对象中。
 - **GL_SEPARATE_ATTRIBS**: Writes attributes to multiple buffer objects or at
-different offsets into a buffer.
+different offsets into a buffer.把这些输出属性写到多个缓冲对象或者同一个缓冲对象的不同偏移位置。
 
 Sometimes it is useful to have separate buffers for each attribute, but lets
 keep it simple for this demo. Now that you've specified the output variables,
 you can link and activate the program. That is because the linking process
-depends on knowledge about the outputs.
+depends on knowledge about the outputs.有时候，分开的写出十分有用。但在这里我们将保持尽量的简单。现在你已经告知了要输出的变量，现在可以链接和激活着色程序了。这种时间顺序是因为，链接阶段需要使用前面的输出capture映射关系。
 
     glLinkProgram(program);
     glUseProgram(program);
 
-After that, create and bind the VAO:
+After that, create and bind the VAO:之后，我们创建和激活VAO:
 
     GLuint vao;
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
-Now, create a buffer with some input data for the vertex shader:
+Now, create a buffer with some input data for the vertex shader:并且创建一个VBO，并加入一些数据：
 
     GLfloat data[] = { 1.0f, 2.0f, 3.0f, 4.0f, 5.0f };
 
@@ -88,16 +89,16 @@ Now, create a buffer with some input data for the vertex shader:
     glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_STATIC_DRAW);
 
 The numbers in `data` are the numbers we want the shader to calculate the square
-root of and transform feedback will help us get the results back.
+root of and transform feedback will help us get the results back.在data的数字将被传到shader中，shader将对其开平方根，然后通过变换反馈来告诉我们结果。
 
-With regards to vertex pointers, you know the drill by now:
+With regards to vertex pointers, you know the drill by now:配置好输入attribute的配置：
 
     GLint inputAttrib = glGetAttribLocation(program, "inValue");
     glEnableVertexAttribArray(inputAttrib);
     glVertexAttribPointer(inputAttrib, 1, GL_FLOAT, GL_FALSE, 0, 0);
 
 Transform feedback will return the values of `outValue`, but first we'll need to
-create a VBO to hold these, just like the input vertices:
+create a VBO to hold these, just like the input vertices:我们创建一个VBO来接受结果：
 
     GLuint tbo;
     glGenBuffers(1, &tbo);
@@ -107,15 +108,15 @@ create a VBO to hold these, just like the input vertices:
 Notice that we now pass a `nullptr` to create a buffer big enough to hold all of
 the resulting floats, but without specifying any initial data. The appropriate
 usage type is now `GL_STATIC_READ`, which indicates that we intend OpenGL to
-write to this buffer and our application to read from it. (See [reference](http://www.opengl.org/sdk/docs/man/xhtml/glBufferData.xml) for usage types)
+write to this buffer and our application to read from it. (See [reference](http://www.opengl.org/sdk/docs/man/xhtml/glBufferData.xml) for usage types)这里注意，在指明数据时传递了nullptr，并且usage为GL_STATIC_READ，这表明我们要OpenGL把数据写到这个VBO中，然后我们CPU从里面读出来。
 
 We've now made all preparations for the <del>rendering</del> computation
-process. As we don't intend to draw anything, the rasterizer should be disabled:
+process. As we don't intend to draw anything, the rasterizer should be disabled:现在让我们开始计算。因为我们不再画任何东西，所以我们可以把光栅化器关掉。
 
     glEnable(GL_RASTERIZER_DISCARD);
 
 To actually bind the buffer we've created above as transform feedback buffer,
-we have to use a new function called `glBindBufferBase`.
+we have to use a new function called `glBindBufferBase`.要激活我们的接受结果的TBO，我们要一个不同的bind函数：
 
     glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, tbo);
 
@@ -166,7 +167,7 @@ input in your terminal:
 
     printf("%f %f %f %f %f\n", feedback[0], feedback[1], feedback[2], feedback[3], feedback[4]);
 
-<img src="/media/img/c8_basic.png" alt="Basic result" />
+<img src="../../media/img/c8_basic.png" alt="Basic result" />
 
 Congratulations, you now know how to make your GPU perform general purpose
 tasks with vertex shaders! Of course a real GPGPU framework like [OpenCL](http://en.wikipedia.org/wiki/OpenCL)
@@ -255,7 +256,7 @@ Retrieving the output still works the same:
         printf("%f\n", feedback[i]);
     }
 
-<img src="/media/img/c8_geometry.png" alt="Basic geometry shader result" />
+<img src="../../media/img/c8_geometry.png" alt="Basic geometry shader result" />
 
 Although you have to pay attention to the feedback primitive type and the size
 of your buffers, adding a geometry shader to the equation doesn't change much
@@ -293,7 +294,7 @@ You can then print that value along with the other data:
 
     printf("%u primitives written!\n\n", primitives);
 
-<img src="/media/img/c8_query.png" alt="Query result" />
+<img src="../../media/img/c8_query.png" alt="Query result" />
 
 Notice that it returns the number of primitives, not the number of vertices.
 Since we have 15 vertices, with each triangle having 3, we have 5 primitives.
@@ -311,6 +312,8 @@ You now know enough about geometry shaders and transform feedback to make your
 graphics card do some very interesting work besides just drawing! You can even
 combine transform feedback and rasterization to update vertices and draw them
 at the same time!
+
+变换反馈，导致我们可以从渲染管线中抓取一些结果回来，这使得使用GPU为我们进行普适计算成为可能。
 
 Exercises
 =========
