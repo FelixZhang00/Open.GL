@@ -1,46 +1,48 @@
 Framebuffers
 ========
 
-In the previous chapters we've looked at the different types of buffers OpenGL offers: the color, depth and stencil buffers. These buffers occupy video memory like any other OpenGL object, but so far we've had little control over them besides specifying the pixel formats when you created the OpenGL context. This combination of buffers is known as the default *framebuffer* and as you've seen, a framebuffer is an area in memory that can be rendered to. What if you want to take a rendered result and do some additional operations on it, such as post-processing as seen in many modern games?
+In the previous chapters we've looked at the different types of buffers OpenGL offers: the color, depth and stencil buffers. These buffers occupy video memory like any other OpenGL object, but so far we've had little control over them besides specifying the pixel formats when you created the OpenGL context. This combination of buffers is known as the default *framebuffer* and as you've seen, a framebuffer is an area in memory that can be rendered to. What if you want to take a rendered result and do some additional operations on it, such as post-processing as seen in many modern games?在前面的章节里，我们已经看到了OpenGL提供个各种不同的缓冲区，比如颜色缓冲区、深度缓冲区和模板缓冲区。和其他OpenGL对象一样这些缓冲区对象占据着显示内存。但是到现在为止，我们还没有多少控制他们，除了在建立OpenGL context时设置像素的格式。这些缓冲区联合在一起可以称为framebuffer，就如你所见，一个framebuffer是内存中的一部分可以被渲染到的区域。如果你要获取渲染结果，或者对渲染结果做更进一步的处理，比如一些游戏中常见的后期处理呢？
 
 In this chapter we'll look at *framebuffer objects*, which are a means of creating additional framebuffers to render to. The great thing about framebuffers is that they allow you to render a scene directly to a texture, which can then be used in other rendering operations. After discussing how framebuffer objects work, I'll show you how to use them to do post-processing on the scene from the previous chapter.
+在本章节，我们将讨论一下framebuffer对象。我们可以创建额外的framebuffer来作为渲染目的。framebuffer的一个巨大的作用是，它能够允许你渲染一个场景到一个纹理内。并且你还可以使用这个纹理到其他的渲染环节中。在讨论完，framebuffer的工作原理后，我会给你演示，通过framebuffer来给之前的场景做后期处理。
 
-Creating a new framebuffer
+创建一个新的framebuffer
 --------
 
 The first thing you need is a framebuffer object to manage your new framebuffer.
-
+你首先需要创建一个FBO，然后才能通过它来控制我们的framebuffer。
 	GLuint frameBuffer;
 	glGenFramebuffers(1, &frameBuffer);
 
-You can not use this framebuffer yet at this point, because it is not *complete*. A framebuffer is generally complete if:
+You can not use this framebuffer yet at this point, because it is not *complete*. A framebuffer is generally complete if:因为这个framebuffer还不完整，所以你还不能使用它。一个framebuffer只有在满足如下要求之后才是完整地：
 
-- At least one buffer has been attached (e.g. color, depth, stencil)
-- There must be at least one color attachment *(OpenGL 4.1 and earlier)*
-- All attachments are complete *(For example, a texture attachment needs to have memory reserved)*
-- All attachments must have the same number of multisamples
+- At least one buffer has been attached (e.g. color, depth, stencil)至少关联一个缓冲区，比如颜色缓冲区、深度缓冲区、模板缓冲区。
+- There must be at least one color attachment *(OpenGL 4.1 and earlier)*至少有一个颜色绑定
+- All attachments are complete *(For example, a texture attachment needs to have memory reserved)*所有的绑定缓冲区都是完整的，比如一个纹理绑定必须有保留的内存。
+- All attachments must have the same number of multisamples所有的绑定都必须有一致数量的多重采样。
 
-You can check if a framebuffer is complete at any time by calling `glCheckFramebufferStatus` and check if it returns `GL_FRAMEBUFFER_COMPLETE`. See the [reference](http://www.opengl.org/sdk/docs/man3/xhtml/glCheckFramebufferStatus.xml) for other return values. You don't have to do this check, but it's usually a good thing to verify, just like checking if your shaders compiled successfully.
+You can check if a framebuffer is complete at any time by calling `glCheckFramebufferStatus` and check if it returns `GL_FRAMEBUFFER_COMPLETE`. See the [reference](http://www.opengl.org/sdk/docs/man3/xhtml/glCheckFramebufferStatus.xml) for other return values. You don't have to do this check, but it's usually a good thing to verify, just like checking if your shaders compiled successfully.你可以通过glCheckFramebufferStatus在任何时候检查framebuffer的完整性。如果它返回`GL_FRAMEBUFFER_COMPLETE`表示完整。其他的返回值可以查看 [reference](http://www.opengl.org/sdk/docs/man3/xhtml/glCheckFramebufferStatus.xml) 。这个检查不是必须的，但是这是一个好习惯，就像检查shader的编译情况一样。
 
-Now, let's bind the framebuffer to work with it.
+Now, let's bind the framebuffer to work with it.现在，让我们把该新建的framebuffer绑定为活动对象：
 
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
 
-The first parameter specifies the target the framebuffer should be attached to. OpenGL makes a distinction here between `GL_DRAW_FRAMEBUFFER` and `GL_READ_FRAMEBUFFER`. The framebuffer bound to read is used in calls to `glReadPixels`, but since this distinction in normal applications is fairly rare, you can have your actions apply to both by using `GL_FRAMEBUFFER`.
+The first parameter specifies the target the framebuffer should be attached to. OpenGL makes a distinction here between `GL_DRAW_FRAMEBUFFER` and `GL_READ_FRAMEBUFFER`. The framebuffer bound to read is used in calls to `glReadPixels`, but since this distinction in normal applications is fairly rare, you can have your actions apply to both by using `GL_FRAMEBUFFER`.第一个参数表示framebuffer的绑定目标。OpenGL在这里是区分`GL_DRAW_FRAMEBUFFER` and `GL_READ_FRAMEBUFFER`的。glReadPixels会读取绑定到读的framebuffer，但是由于一般程序很少会做这种区分，所以你可以直接使用GL_FRAMEBUFFER这个目标，来把读/写的目标到绑定为同一个framebuffer。
 
 	glDeleteFramebuffers(1, &frameBuffer);
 
-Don't forget to clean up after you're done.
+Don't forget to clean up after you're done.在完成绑定之后，你可以把FBO删了。
 
 Attachments
 --------
 
-Your framebuffer can only be used as a render target if memory has been allocated to store the results. This is done by attaching *images* for each buffer (color, depth, stencil or a combination of depth and stencil). There are two kinds of objects that can function as images: texture objects and *renderbuffer objects*. The advantage of the former is that they can be directly used in shaders as seen in the previous chapters, but renderbuffer objects may be more optimized specifically as render targets depending on your implementation.
+Your framebuffer can only be used as a render target if memory has been allocated to store the results. This is done by attaching *images* for each buffer (color, depth, stencil or a combination of depth and stencil). There are two kinds of objects that can function as images: texture objects and *renderbuffer objects*. The advantage of the former is that they can be directly used in shaders as seen in the previous chapters, but renderbuffer objects may be more optimized specifically as render targets depending on your implementation.如果framebuffer的内存已经被分配了，那么framebuffer就只能被用来当做渲染的目标。这个过程可以通过给每个缓冲区分配一个镜像。有两个类型的对象可以被用作镜像：纹理对象和renderbuffer objects。使用纹理对象的好处是，这个纹理对象还可以当做纹理对象使用。
+
 
 Texture images
 --------
 
-We'd like to be able to render a scene and then use the result in the color buffer in another rendering operation, so a texture is ideal in this case. Creating a texture for use as an image for the color buffer of the new framebuffer is as simple as creating any texture.
+We'd like to be able to render a scene and then use the result in the color buffer in another rendering operation, so a texture is ideal in this case. Creating a texture for use as an image for the color buffer of the new framebuffer is as simple as creating any texture.如果我们想在其他的渲染过程中使用这次渲染的结果，那么我们可以给framebuffer绑定一个纹理对象。把一个纹理创建为纹理镜像的方法和普通的创建纹理是一样的：
 
 	GLuint texColorBuffer;
 	glGenTextures(1, &texColorBuffer);
@@ -53,16 +55,16 @@ We'd like to be able to render a scene and then use the result in the color buff
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-The difference between this texture and the textures you've seen before is the `NULL` value for the data parameter. That makes sense, because the data is going to be created dynamically this time with rendering operations. Since this is the image for the color buffer, the `format` and `internalformat` parameters are a bit more restricted. The `format` parameter will typically be limited to either `GL_RGB` or `GL_RGBA` and the `internalformat` to the color formats.
+The difference between this texture and the textures you've seen before is the `NULL` value for the data parameter. That makes sense, because the data is going to be created dynamically this time with rendering operations. Since this is the image for the color buffer, the `format` and `internalformat` parameters are a bit more restricted. The `format` parameter will typically be limited to either `GL_RGB` or `GL_RGBA` and the `internalformat` to the color formats.唯一的区别是，在给纹理指定内容时，这里指定为NULL。这是对的，因为这次，纹理的内容是通过渲染动态创建的。因为这是一个用来作为颜色缓冲区的镜像，所以纹理格式和内部数据格式具有一定的限制。纹理格式被限制为GL_RG或者GL_RGBA，而内部数据格式要与色彩的一直。
 
-I've chosen the default RGB internal format here, but you can experiment with more exotic formats like `GL_RGB10` if you want 10 bits of color precision. My application has a resolution of 800 by 600 pixels, so I've made this new color buffer match that. The resolution doesn't have to match the one of the default framebuffer, but don't forget a `glViewport` call if you do decide to vary.
+I've chosen the default RGB internal format here, but you can experiment with more exotic formats like `GL_RGB10` if you want 10 bits of color precision. My application has a resolution of 800 by 600 pixels, so I've made this new color buffer match that. The resolution doesn't have to match the one of the default framebuffer, but don't forget a `glViewport` call if you do decide to vary.我这里选择了默认的RGB内部格式，但是你还可以使用更加特别的内部数据格式，比如GL_RGB10，它给出了10bit的色彩精度。我的程序的分辨率是800*600，所以我把这个新的颜色缓冲区设置为那个大小。但是这个分辨率与framebuffer的大小并不是一定要一样的，不过我们要记得调用glViewport，当我们决定改变这个分辨率的时候。
 
-The one thing that remains is attaching the image to the framebuffer.
+The one thing that remains is attaching the image to the framebuffer.剩下的工作就是把这个镜像绑定到framebuffer：
 
 	glFramebufferTexture2D(
 		GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColorBuffer, 0
 	);
-
+第二个参数表明，你可以由多个颜色缓冲区绑定。一个片段着色器可以输出不同的数据到不同的out对象，我们只要把这些Out变量用glBindFragDataLocation绑定到不同的颜色缓冲区即可。现在我们只使用一个。最后一个参数指明mipmap的level。在这里我们并不适用mipmap，因为我们只是把这个缓冲区用来做后期处理。
 The second parameter implies that you can have multiple color attachments. A fragment shader can output different data to any of these by linking `out` variables to attachments with the `glBindFragDataLocation` function we used earlier. We'll stick to one output for now. The last parameter specifies the mipmap level the image should be attached to. Mipmapping is not of any use, since the color buffer image will be rendered at its original size when using it for post-processing.
 
 Renderbuffer Object images
@@ -99,7 +101,7 @@ Note that although only the default framebuffer will be visible on your screen, 
 Post-processing
 ========
 
-In games nowadays post-processing effects seem almost just as important as the actual scenes being rendered on screen, and indeed some spectacular results can be accomplished with different techniques. Post-processing effects in real-time graphics are commonly implemented in fragment shaders with the rendered scene as input in the form of a texture. Framebuffer objects allow us to use a texture to contain the color buffer, so we can use them to prepare input for a post-processing effect.
+In games nowadays post-processing effects seem almost just as important as the actual scenes being rendered on screen, and indeed some spectacular results can be accomplished with different techniques. **Post-processing effects in real-time graphics are commonly implemented in fragment shaders with the rendered scene as input in the form of a texture. **Framebuffer objects allow us to use a texture to contain the color buffer, so we can use them to prepare input for a post-processing effect. 一般后期处理，都是把场景的渲染结果再作为纹理到片段着色器中进行后期处理的。
 
 To use shaders to create a post-processing effect for a scene previously rendered to a texture, it is commonly rendered as a screen filling 2D rectangle. That way the original scene with the effect applied fills the screen at its original size as if it was rendered to the default framebuffer in the first place.
 
@@ -175,7 +177,7 @@ Color manipulation
 
 Inverting the colors is an option usually found in image manipulation programs, but you can also do it yourself using shaders!
 
-<img src="/media/img/c6_invert.png" alt="" style="align: center" />
+<img src="../../media/img/c6_invert.png" alt="" style="align: center" />
 
 As color values are floating point values ranging from `0.0` to `1.0`, inverting a channel is as simple as calculating `1.0 - channel`. If you do this for each channel (red, green, blue) you'll get an inverted color. In the fragment shader, that can be done like this.
 
@@ -184,8 +186,8 @@ As color values are floating point values ranging from `0.0` to `1.0`, inverting
 This will also affect the alpha channel, but that doesn't matter because alpha blending is disabled by default.
 
 <div style="width: 87.5%; margin: auto">
-	<img src="/media/img/c6_grayscale.png" alt="" style="display: inline" />
-	<img src="/media/img/c6_grayscale2.png" alt="" style="display: inline" />
+	<img src="../../media/img/c6_grayscale.png" alt="" style="display: inline" />
+	<img src="../../media/img/c6_grayscale2.png" alt="" style="display: inline" />
 </div>
 
 Making colors grayscale can be naively done by calculating the average intensity of each channel.
@@ -205,7 +207,7 @@ Blur
 
 There are two well known blur techniques: box blur and Gaussian blur. The latter results in a higher quality result, but the former is easier to implement and still approximates Gaussian blur fairly well.
 
-<img src="/media/img/c6_blur.png" alt="" style="align: center" />
+<img src="../../media/img/c6_blur.png" alt="" style="align: center" />
 
 Blurring is done by sampling pixels around a pixel and calculating the average color.
 
@@ -229,7 +231,7 @@ Sobel
 
 The Sobel operator is often used in edge detection algorithms, let's find out what it looks like.
 
-<img src="/media/img/c6_sobel.png" alt="" style="align: center" />
+<img src="../../media/img/c6_sobel.png" alt="" style="align: center" />
 
 The fragment shader looks like this:
 
